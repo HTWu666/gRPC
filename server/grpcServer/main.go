@@ -3,7 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
-	pb "grpc/server/proto"
+	pb "grpc/server/grpcServer/proto"
 	"net"
 	"google.golang.org/grpc"
 )
@@ -13,15 +13,21 @@ type server struct {
 }
 
 func (s *server) Transmit(ctx context.Context, req *pb.TransmitRequest) (*pb.TransmitResponse, error) {
-	fmt.Println("grpc is running")
 	return &pb.TransmitResponse{Response: "Server received your request"}, nil
 }
 
 func main() {
-	listen, _ := net.Listen("tcp", ":3000")
+	listen, err := net.Listen("tcp", ":5001")
+	if err != nil {
+		fmt.Printf("Failed to connect: %v", err)
+		return
+	}
+
+	fmt.Println("grpc is opening")
+
 	grpcServer := grpc.NewServer()
 	pb.RegisterTransmitServer(grpcServer, &server{})
-	err := grpcServer.Serve(listen)
+	err = grpcServer.Serve(listen)
 	if err != nil {
 		fmt.Printf("Failed to serve: %v", err)
 		return
