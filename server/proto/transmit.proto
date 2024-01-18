@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+option go_package = ".;service";
+
+service Transmit {
+    rpc Transmit(TransmitRequest) returns (TransmitResponse) {}
+}
+
+message TransmitRequest {
+    string request = 1;
+}
+
+message TransmitResponse {
+    string response = 1;
+}
