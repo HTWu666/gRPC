@@ -17,12 +17,10 @@ import (
 )
 
 func main() {
-	err := godotenv.Load()
+	err := godotenv.Load("../.env")
     if err != nil {
         log.Fatal("Error loading .env file")
     }
-
-	listen, err := net.Listen("tcp", ":" + os.Getenv("GRPC_SERVER_PORT"))
 
 	flag.Parse()
 	r := gin.Default()
@@ -78,5 +76,5 @@ func main() {
 		c.String(http.StatusOK, string(responseData))
 	})
 
-	r.Run(os.Getenv("CLIENT_PORT"))
+	r.Run(":" + os.Getenv("CLIENT_PORT"))
 }

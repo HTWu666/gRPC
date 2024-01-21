@@ -18,7 +18,7 @@ func (s *server) Transmit(ctx context.Context, req *pb.TransmitRequest) (*pb.Tra
 }
 
 func main() {
-	err := godotenv.Load()
+	err := godotenv.Load("../../.env")
     if err != nil {
         log.Fatal("Error loading .env file")
     }
