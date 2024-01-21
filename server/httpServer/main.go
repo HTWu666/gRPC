@@ -3,9 +3,15 @@ package main
 import (
 	"net/http"
 	"github.com/gin-gonic/gin"
+	"github.com/joho/godotenv"
 )
 
 func main() {
+	err := godotenv.Load()
+    if err != nil {
+        log.Fatal("Error loading .env file")
+    }
+
 	r := gin.Default()
 
 	r.POST("/", func(c *gin.Context) {
@@ -14,5 +20,5 @@ func main() {
 		})
 	})
 
-	r.Run(":5000")
+	r.Run(os.Getenv("HTTP_SERVER_PORT"))
 }

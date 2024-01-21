@@ -13,13 +13,21 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 	"github.com/gin-gonic/gin"
+	"github.com/joho/godotenv"
 )
 
 func main() {
+	err := godotenv.Load()
+    if err != nil {
+        log.Fatal("Error loading .env file")
+    }
+
+	listen, err := net.Listen("tcp", ":" + os.Getenv("GRPC_SERVER_PORT"))
+
 	flag.Parse()
 	r := gin.Default()
 
-	conn, err := grpc.Dial("127.0.0.1:5001", grpc.WithTransportCredentials(insecure.NewCredentials()))
+	conn, err := grpc.Dial(os.Getenv("GRPC_SERVER_IP") + ":" + os.Getenv("GRPC_SERVER_PORT"), grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		log.Fatalf("Failed to connect: %v", err)
 	}
@@ -49,30 +57,26 @@ func main() {
 			return
 		}
 
-		// 创建请求
-		resp, err := http.Post("http://localhost:5000", "text/plain", strings.NewReader(string(fileContent)))
+		resp, err := http.Post("http://" + os.Getenv("HTTP_SERVER_IP") + ":" + os.Getenv("HTTP_SERVER_PORT"), "text/plain", strings.NewReader(string(fileContent)))
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to send HTTP request"})
 			return
 		}
 		defer resp.Body.Close()
 
-		// 检查响应状态
 		if resp.StatusCode != http.StatusOK {
 			c.JSON(resp.StatusCode, gin.H{"error": fmt.Sprintf("Request failed with status: %s", resp.Status)})
 			return
 		}
 
-		// 读取响应
 		responseData, err := io.ReadAll(resp.Body)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to read response"})
 			return
 		}
-fmt.Println(string(responseData))
-		// 将响应发送回客户端
+
 		c.String(http.StatusOK, string(responseData))
 	})
 
-	r.Run(":3000")
+	r.Run(os.Getenv("CLIENT_PORT"))
 }

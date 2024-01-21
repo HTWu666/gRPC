@@ -6,6 +6,7 @@ import (
 	pb "grpc/server/grpcServer/proto"
 	"net"
 	"google.golang.org/grpc"
+	"github.com/joho/godotenv"
 )
 
 type server struct {
@@ -17,7 +18,12 @@ func (s *server) Transmit(ctx context.Context, req *pb.TransmitRequest) (*pb.Tra
 }
 
 func main() {
-	listen, err := net.Listen("tcp", ":5001")
+	err := godotenv.Load()
+    if err != nil {
+        log.Fatal("Error loading .env file")
+    }
+
+	listen, err := net.Listen("tcp", ":" + os.Getenv("GRPC_SERVER_PORT"))
 	if err != nil {
 		fmt.Printf("Failed to connect: %v", err)
 		return
