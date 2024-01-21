@@ -2,6 +2,8 @@ package main
 
 import (
 	"net/http"
+	"log"
+	"os"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 )
