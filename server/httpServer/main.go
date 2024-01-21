@@ -22,5 +22,5 @@ func main() {
 		})
 	})
 
-	r.Run(os.Getenv("HTTP_SERVER_PORT"))
+	r.Run(":" + os.Getenv("HTTP_SERVER_PORT"))
 }
